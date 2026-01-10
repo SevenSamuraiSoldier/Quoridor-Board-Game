@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quoridor OG v1.1 - Goal Zones</title>
+    <title>Quoridor OG v1.1.1 - Color Reset</title>
     <style>
         :root {
             --bg-color: #121212;
@@ -12,8 +12,8 @@
             --p1-color: #03dac6;
             --p2-color: #cf6679;
             --wall-placed-color: #ff9800;
-            --square-color: #2c2c2c;
-            --wall-slot-color: #1a1a1a;
+            --square-color: #3a4145;
+            --wall-slot-color: #1c1c1c;
             --drawer-width: 280px;
         }
 
@@ -48,15 +48,8 @@
 
         /* Goal Zones */
         .goal-zone {
-            width: 495px; /* Matches board width approx */
-            
-            text-align: center;
-            font-weight: bold;
-            font-size: 14px;
-            letter-spacing: 2px;
-            border-radius: 4px;
-            text-transform: uppercase;
-            opacity: 0.8;
+            width: 495px; text-align: center; font-weight: bold; font-size: 14px;
+            letter-spacing: 2px; border-radius: 4px; text-transform: uppercase; opacity: 0.8;
         }
         #goal-p1 { background-color: var(--p1-color); color: #000; box-shadow: 0 0 15px rgba(3, 218, 198, 0.3); }
         #goal-p2 { background-color: var(--p2-color); color: #000; box-shadow: 0 0 15px rgba(207, 102, 121, 0.3); }
@@ -88,6 +81,7 @@
         
         button { padding: 10px; background: #333; color: white; border: none; cursor: pointer; margin-top: 10px; border-radius: 4px; font-weight: bold; width: 100%;}
         .new-game-btn { background: #b00020; margin-top: 20px; }
+        .reset-color-btn { background: #444; margin-top: 10px; font-size: 13px; }
         .path-label { position: absolute; font-size: 9px; color: #666; bottom: 2px; right: 4px; }
     </style>
 </head>
@@ -126,6 +120,7 @@
         </div>
 
         <button class="new-game-btn" onclick="confirmNewGame()">New Game</button>
+        <button class="reset-color-btn" onclick="resetCustomColors()">Clear Custom Colors</button>
     </div>
 
 <script>
@@ -137,19 +132,38 @@
     function init() {
         const saved = localStorage.getItem('quoridorState');
         if (saved) state = JSON.parse(saved);
-        document.getElementById('square-picker').value = localStorage.getItem('q-square-col') || '#2c2c2c';
-        document.getElementById('wall-picker').value = localStorage.getItem('q-wall-col') || '#1a1a1a';
-        updateColors();
+        
+        // Load colors or defaults
+        const sCol = localStorage.getItem('q-square-col') || '#3a4145';
+        const wCol = localStorage.getItem('q-wall-col') || '#1c1c1c';
+        document.getElementById('square-picker').value = sCol;
+        document.getElementById('wall-picker').value = wCol;
+        
+        applyColors(sCol, wCol);
         render();
     }
 
     function updateColors() {
         const sCol = document.getElementById('square-picker').value;
         const wCol = document.getElementById('wall-picker').value;
-        document.documentElement.style.setProperty('--square-color', sCol);
-        document.documentElement.style.setProperty('--wall-slot-color', wCol);
         localStorage.setItem('q-square-col', sCol);
         localStorage.setItem('q-wall-col', wCol);
+        applyColors(sCol, wCol);
+    }
+
+    function applyColors(s, w) {
+        document.documentElement.style.setProperty('--square-color', s);
+        document.documentElement.style.setProperty('--wall-slot-color', w);
+    }
+
+    function resetCustomColors() {
+        localStorage.removeItem('q-square-col');
+        localStorage.removeItem('q-wall-col');
+        const defSquare = '#3a4145';
+        const defWall = '#1c1c1c';
+        document.getElementById('square-picker').value = defSquare;
+        document.getElementById('wall-picker').value = defWall;
+        applyColors(defSquare, defWall);
     }
 
     function render() {
@@ -283,7 +297,7 @@
     function toggleDrawer() { const dr = document.getElementById('history-drawer'); dr.classList.toggle('open'); document.getElementById('drawer-handle').innerText = dr.classList.contains('open') ? '❮' : '❯'; }
     function endTurn() { state.turn = state.turn === 1 ? 2 : 1; localStorage.setItem('quoridorState', JSON.stringify(state)); render(); }
     function undo() { if (state.lastState) { state = state.lastState; render(); } }
-    function confirmNewGame() { if (confirm("Start fresh?")) { localStorage.removeItem('quoridorState'); location.reload(); } }
+    function confirmNewGame() { if (confirm("Start fresh?")) { state = { turn: 1, p1: {r: 8, c: 4, walls: 10}, p2: {r: 0, c: 4, walls: 10}, walls: [], history: [], lastState: null }; localStorage.setItem('quoridorState', JSON.stringify(state)); render(); } }
     function checkWin() { if (state.p1.r === 0) { alert("P1 Wins!"); confirmNewGame(); return true; } if (state.p2.r === 8) { alert("P2 Wins!"); confirmNewGame(); return true; } return false; }
 
     init();
