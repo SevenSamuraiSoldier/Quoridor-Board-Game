@@ -1,306 +1,593 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quoridor OG v1.1.1 - Color Reset</title>
-    <style>
-        :root {
-            --bg-color: #121212;
-            --panel-bg: #1e1e1e;
-            --accent: #bb86fc;
-            --p1-color: #03dac6;
-            --p2-color: #cf6679;
-            --wall-placed-color: #ff9800;
-            --square-color: #3a4145;
-            --wall-slot-color: #1c1c1c;
-            --drawer-width: 280px;
-        }
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Quoridor OG v1.1.1 - Color Reset</title>
+        <style>
+            :root {
+                --bg-color: #121212;
+                --panel-bg: #1e1e1e;
+                --accent: #bb86fc;
+                --p1-color: #03dac6;
+                --p2-color: #cf6679;
+                --wall-placed-color: #ff9800;
+                --square-color: #3a4145;
+                --wall-slot-color: #1c1c1c;
+                --drawer-width: 280px;
+            }
 
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            background-color: var(--bg-color);
-            color: #e0e0e0;
-            margin: 0;
-            display: flex;
-            height: 100vh;
-            overflow: hidden;
-        }
+            body {
+                font-family: "Segoe UI", sans-serif;
+                background-color: var(--bg-color);
+                color: #e0e0e0;
+                margin: 0;
+                display: flex;
+                height: 100vh;
+                overflow: hidden;
+            }
 
-        /* Side Drawer */
-        #history-drawer {
-            position: fixed; left: -5px; top: 50%; transform: translate(calc(-1 * var(--drawer-width)), -50%);
-            width: var(--drawer-width); height: 60vh; background: #151515; transition: transform 0.4s ease;
-            border: 1px solid #333; border-radius: 0 12px 12px 0; display: flex; flex-direction: column; z-index: 100;
-        }
-        #history-drawer.open { transform: translate(0, -50%); }
+            /* Side Drawer */
+            #history-drawer {
+                position: fixed;
+                left: -5px;
+                top: 50%;
+                transform: translate(calc(-1 * var(--drawer-width)), -50%);
+                width: var(--drawer-width);
+                height: 60vh;
+                background: #151515;
+                transition: transform 0.4s ease;
+                border: 1px solid #333;
+                border-radius: 0 12px 12px 0;
+                display: flex;
+                flex-direction: column;
+                z-index: 100;
+            }
+            #history-drawer.open {
+                transform: translate(0, -50%);
+            }
 
-        #drawer-handle {
-            position: absolute; right: -30px; top: 50%; transform: translateY(-50%);
-            width: 30px; height: 60px; background: var(--panel-bg); border: 1px solid #333;
-            border-left: none; border-radius: 0 8px 8px 0; display: flex; justify-content: center; align-items: center;
-            cursor: pointer; color: var(--accent); font-size: 20px;
-        }
+            #drawer-handle {
+                position: absolute;
+                right: -30px;
+                top: 50%;
+                transform: translateY(-50%);
+                width: 30px;
+                height: 60px;
+                background: var(--panel-bg);
+                border: 1px solid #333;
+                border-left: none;
+                border-radius: 0 8px 8px 0;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                cursor: pointer;
+                color: var(--accent);
+                font-size: 20px;
+            }
 
-        /* Layout */
-        #main-area { flex: 0 0 60%; display: flex; flex-direction: column; justify-content: center; align-items: center; border-right: 1px solid #333; gap: 10px; }
-        #settings-panel { flex: 1; display: flex; flex-direction: column; padding: 20px; background: var(--panel-bg); overflow-y: auto;}
+            /* Layout */
+            #main-area {
+                flex: 0 0 60%;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                border-right: 1px solid #333;
+                gap: 10px;
+            }
+            #settings-panel {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                padding: 20px;
+                background: var(--panel-bg);
+                overflow-y: auto;
+            }
 
-        /* Goal Zones */
-        .goal-zone {
-            width: 495px; text-align: center; font-weight: bold; font-size: 14px;
-            letter-spacing: 2px; border-radius: 4px; text-transform: uppercase; opacity: 0.8;
-        }
-        #goal-p1 { background-color: var(--p1-color); color: #000; box-shadow: 0 0 15px rgba(3, 218, 198, 0.3); }
-        #goal-p2 { background-color: var(--p2-color); color: #000; box-shadow: 0 0 15px rgba(207, 102, 121, 0.3); }
+            /* Goal Zones */
+            .goal-zone {
+                width: 495px;
+                text-align: center;
+                font-weight: bold;
+                font-size: 14px;
+                letter-spacing: 2px;
+                border-radius: 4px;
+                text-transform: uppercase;
+                opacity: 0.8;
+            }
+            #goal-p1 {
+                background-color: var(--p1-color);
+                color: #000;
+                box-shadow: 0 0 15px rgba(3, 218, 198, 0.3);
+            }
+            #goal-p2 {
+                background-color: var(--p2-color);
+                color: #000;
+                box-shadow: 0 0 15px rgba(207, 102, 121, 0.3);
+            }
 
-        /* Board */
-        #board { display: grid; background-color: #000; padding: 10px; border-radius: 4px; user-select: none; }
-        .square { width: 45px; height: 45px; background: var(--square-color); cursor: pointer; display: flex; justify-content: center; align-items: center; position: relative; }
-        .v-wall { width: 10px; height: 45px; background: var(--wall-slot-color); cursor: pointer; }
-        .h-wall { width: 45px; height: 10px; background: var(--wall-slot-color); cursor: pointer; }
-        .joint { width: 10px; height: 10px; background: var(--wall-slot-color); }
-        
-        .valid-move { background: rgba(3, 218, 198, 0.2) !important; }
-        .valid-move::after { content: ''; width: 10px; height: 10px; background: var(--p1-color); border-radius: 50%; opacity: 0.5; }
-        .wall-preview { background: rgba(255, 152, 0, 0.4) !important; }
-        .wall-placed { background: var(--wall-placed-color) !important; }
-        
-        .pawn { width: 30px; height: 30px; border-radius: 50%; border: 2px solid #fff; z-index: 5; }
-        .p1-pawn { background: var(--p1-color); box-shadow: 0 0 10px var(--p1-color); }
-        .p2-pawn { background: var(--p2-color); box-shadow: 0 0 10px var(--p2-color); }
+            /* Board */
+            #board {
+                display: grid;
+                background-color: #000;
+                padding: 10px;
+                border-radius: 4px;
+                user-select: none;
+            }
+            .square {
+                width: 45px;
+                height: 45px;
+                background: var(--square-color);
+                cursor: pointer;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                position: relative;
+            }
+            .v-wall {
+                width: 10px;
+                height: 45px;
+                background: var(--wall-slot-color);
+                cursor: pointer;
+            }
+            .h-wall {
+                width: 45px;
+                height: 10px;
+                background: var(--wall-slot-color);
+                cursor: pointer;
+            }
+            .joint {
+                width: 10px;
+                height: 10px;
+                background: var(--wall-slot-color);
+            }
 
-        /* UI */
-        .status-bar { display: flex; justify-content: space-between; background: #252525; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
-        .player-box { padding: 10px; border-radius: 4px; border: 2px solid transparent; flex: 1; text-align: center; }
-        .p1-active { border-color: var(--p1-color); background: rgba(3, 218, 198, 0.1); }
-        .p2-active { border-color: var(--p2-color); background: rgba(207, 102, 121, 0.1); }
-        
-        .control-section { border-top: 1px solid #333; padding-top: 15px; margin-top: 15px; }
-        .picker-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-size: 14px; }
-        
-        button { padding: 10px; background: #333; color: white; border: none; cursor: pointer; margin-top: 10px; border-radius: 4px; font-weight: bold; width: 100%;}
-        .new-game-btn { background: #b00020; margin-top: 20px; }
-        .reset-color-btn { background: #444; margin-top: 10px; font-size: 13px; }
-        .path-label { position: absolute; font-size: 9px; color: #666; bottom: 2px; right: 4px; }
-    </style>
-</head>
-<body>
+            .valid-move {
+                background: rgba(3, 218, 198, 0.2) !important;
+            }
+            .valid-move::after {
+                content: "";
+                width: 10px;
+                height: 10px;
+                background: var(--p1-color);
+                border-radius: 50%;
+                opacity: 0.5;
+            }
+            .wall-preview {
+                background: rgba(255, 152, 0, 0.4) !important;
+            }
+            .wall-placed {
+                background: var(--wall-placed-color) !important;
+            }
 
-    <div id="history-drawer">
-        <div id="drawer-handle" onclick="toggleDrawer()">❯</div>
-        <div style="padding:15px; border-bottom:1px solid #333; font-weight:bold; color:var(--accent);">MOVE HISTORY</div>
-        <div id="history-list" style="flex:1; overflow-y:auto; padding:15px; font-family:monospace;"></div>
-    </div>
+            .pawn {
+                width: 30px;
+                height: 30px;
+                border-radius: 50%;
+                border: 2px solid #fff;
+                z-index: 5;
+            }
+            .p1-pawn {
+                background: var(--p1-color);
+                box-shadow: 0 0 10px var(--p1-color);
+            }
+            .p2-pawn {
+                background: var(--p2-color);
+                box-shadow: 0 0 10px var(--p2-color);
+            }
 
-    <div id="main-area">
-        <div id="goal-p1" class="goal-zone">Player 1 Goal</div>
-        <div id="board"></div>
-        <div id="goal-p2" class="goal-zone">Player 2 Goal</div>
-    </div>
+            /* UI */
+            .status-bar {
+                display: flex;
+                justify-content: space-between;
+                background: #252525;
+                padding: 15px;
+                border-radius: 8px;
+                margin-bottom: 20px;
+            }
+            .player-box {
+                padding: 10px;
+                border-radius: 4px;
+                border: 2px solid transparent;
+                flex: 1;
+                text-align: center;
+            }
+            .p1-active {
+                border-color: var(--p1-color);
+                background: rgba(3, 218, 198, 0.1);
+            }
+            .p2-active {
+                border-color: var(--p2-color);
+                background: rgba(207, 102, 121, 0.1);
+            }
 
-    <div id="settings-panel">
-        <div class="status-bar">
-            <div id="p2-box" class="player-box"><b>P2</b><br>Walls: <span id="p2-w">10</span></div>
-            <div id="p1-box" class="player-box p1-active"><b>P1</b><br>Walls: <span id="p1-w">10</span></div>
+            .control-section {
+                border-top: 1px solid #333;
+                padding-top: 15px;
+                margin-top: 15px;
+            }
+            .picker-row {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 10px;
+                font-size: 14px;
+            }
+
+            button {
+                padding: 10px;
+                background: #333;
+                color: white;
+                border: none;
+                cursor: pointer;
+                margin-top: 10px;
+                border-radius: 4px;
+                font-weight: bold;
+                width: 100%;
+            }
+            .new-game-btn {
+                background: #b00020;
+                margin-top: 20px;
+            }
+            .reset-color-btn {
+                background: #444;
+                margin-top: 10px;
+                font-size: 13px;
+            }
+            .path-label {
+                position: absolute;
+                font-size: 9px;
+                color: #666;
+                bottom: 2px;
+                right: 4px;
+            }
+            @media (orientation: portrait),(max-width: 768px) {
+                body {
+                    align-content: center;
+                    align-items: center;
+                    flex-wrap: wrap;
+                    justify-content: center;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div id="history-drawer">
+            <div id="drawer-handle" onclick="toggleDrawer()">❯</div>
+            <div style="padding: 15px; border-bottom: 1px solid #333; font-weight: bold; color: var(--accent)">MOVE HISTORY</div>
+            <div id="history-list" style="flex: 1; overflow-y: auto; padding: 15px; font-family: monospace"></div>
         </div>
 
-        <div style="display:flex; flex-direction:column; gap:10px;">
-            <label style="display:flex; justify-content:space-between; font-size:14px;">Moves Highlight <input type="checkbox" id="toggle-moves" checked onchange="render()"></label>
-            <label style="display:flex; justify-content:space-between; font-size:14px;">Wall Preview <input type="checkbox" id="toggle-preview" checked></label>
-            <label style="display:flex; justify-content:space-between; font-size:14px;">Path Distance <input type="checkbox" id="toggle-path" onchange="render()"></label>
+        <div id="main-area">
+            <div id="goal-p1" class="goal-zone">Player 1 Goal</div>
+            <div id="board"></div>
+            <div id="goal-p2" class="goal-zone">Player 2 Goal</div>
         </div>
 
-        <div class="control-section">
-            <button onclick="undo()">Undo Last Move</button>
-            <div style="margin-top: 15px;">
-                <div class="picker-row"><span>Square Color</span><input type="color" id="square-picker" value="#3a4145" oninput="updateColors()"></div>
-                <div class="picker-row"><span>Wall Slot Color</span><input type="color" id="wall-picker" value="#1c1c1c" oninput="updateColors()"></div>
+        <div id="settings-panel">
+            <div class="status-bar">
+                <div id="p2-box" class="player-box">
+                    <b>P2</b>
+                    <br />
+                    Walls:
+                    <span id="p2-w">10</span>
+                </div>
+                <div id="p1-box" class="player-box p1-active">
+                    <b>P1</b>
+                    <br />
+                    Walls:
+                    <span id="p1-w">10</span>
+                </div>
             </div>
+
+            <div style="display: flex; flex-direction: column; gap: 10px">
+                <label style="display: flex; justify-content: space-between; font-size: 14px">
+                    Moves Highlight
+                    <input type="checkbox" id="toggle-moves" checked onchange="render()" />
+                </label>
+                <label style="display: flex; justify-content: space-between; font-size: 14px">
+                    Wall Preview
+                    <input type="checkbox" id="toggle-preview" />
+                </label>
+                <label style="display: flex; justify-content: space-between; font-size: 14px">
+                    Path Distance
+                    <input type="checkbox" id="toggle-path" onchange="render()" />
+                </label>
+            </div>
+
+            <div class="control-section">
+                <button onclick="undo()">Undo Last Move</button>
+                <div style="margin-top: 15px">
+                    <div class="picker-row">
+                        <span>Square Color</span>
+                        <input type="color" id="square-picker" value="#3a4145" oninput="updateColors()" />
+                    </div>
+                    <div class="picker-row">
+                        <span>Wall Slot Color</span>
+                        <input type="color" id="wall-picker" value="#1c1c1c" oninput="updateColors()" />
+                    </div>
+                </div>
+            </div>
+
+            <button class="new-game-btn" onclick="confirmNewGame()">New Game</button>
+            <button class="reset-color-btn" onclick="resetCustomColors()">Clear Custom Colors</button>
         </div>
 
-        <button class="new-game-btn" onclick="confirmNewGame()">New Game</button>
-        <button class="reset-color-btn" onclick="resetCustomColors()">Clear Custom Colors</button>
-    </div>
+        <script>
+            const SIZE = 9;
+            const boardEl = document.getElementById("board");
+            let state = {turn: 1, p1: {r: 8, c: 4, walls: 10}, p2: {r: 0, c: 4, walls: 10}, walls: [], history: [], lastState: null};
+            let previewWall = null;
 
-<script>
-    const SIZE = 9;
-    const boardEl = document.getElementById('board');
-    let state = { turn: 1, p1: {r: 8, c: 4, walls: 10}, p2: {r: 0, c: 4, walls: 10}, walls: [], history: [], lastState: null };
-    let previewWall = null;
+            function init() {
+                const saved = localStorage.getItem("quoridorState");
+                if (saved) state = JSON.parse(saved);
 
-    function init() {
-        const saved = localStorage.getItem('quoridorState');
-        if (saved) state = JSON.parse(saved);
-        
-        // Load colors or defaults
-        const sCol = localStorage.getItem('q-square-col') || '#3a4145';
-        const wCol = localStorage.getItem('q-wall-col') || '#1c1c1c';
-        document.getElementById('square-picker').value = sCol;
-        document.getElementById('wall-picker').value = wCol;
-        
-        applyColors(sCol, wCol);
-        render();
-    }
+                // Load colors or defaults
+                const sCol = localStorage.getItem("q-square-col") || "#3a4145";
+                const wCol = localStorage.getItem("q-wall-col") || "#1c1c1c";
+                document.getElementById("square-picker").value = sCol;
+                document.getElementById("wall-picker").value = wCol;
 
-    function updateColors() {
-        const sCol = document.getElementById('square-picker').value;
-        const wCol = document.getElementById('wall-picker').value;
-        localStorage.setItem('q-square-col', sCol);
-        localStorage.setItem('q-wall-col', wCol);
-        applyColors(sCol, wCol);
-    }
-
-    function applyColors(s, w) {
-        document.documentElement.style.setProperty('--square-color', s);
-        document.documentElement.style.setProperty('--wall-slot-color', w);
-    }
-
-    function resetCustomColors() {
-        localStorage.removeItem('q-square-col');
-        localStorage.removeItem('q-wall-col');
-        const defSquare = '#3a4145';
-        const defWall = '#1c1c1c';
-        document.getElementById('square-picker').value = defSquare;
-        document.getElementById('wall-picker').value = defWall;
-        applyColors(defSquare, defWall);
-    }
-
-    function render() {
-        boardEl.innerHTML = '';
-        const cols = [];
-        for(let i=0; i<SIZE; i++) { cols.push('45px'); if(i<SIZE-1) cols.push('10px'); }
-        boardEl.style.gridTemplateColumns = cols.join(' ');
-
-        const validMoves = document.getElementById('toggle-moves').checked ? getValidMoves(state.turn === 1 ? state.p1 : state.p2, state.turn === 1 ? state.p2 : state.p1) : [];
-
-        for (let r = 0; r < SIZE * 2 - 1; r++) {
-            for (let c = 0; c < SIZE * 2 - 1; c++) {
-                const el = document.createElement('div');
-                const isSquare = r % 2 === 0 && c % 2 === 0;
-                const isH = r % 2 === 1 && c % 2 === 0;
-                const isV = r % 2 === 0 && c % 2 === 1;
-
-                if (isSquare) {
-                    el.className = 'square';
-                    const row = r/2, col = c/2;
-                    if (row === state.p1.r && col === state.p1.c) el.innerHTML = '<div class="pawn p1-pawn"></div>';
-                    else if (row === state.p2.r && col === state.p2.c) el.innerHTML = '<div class="pawn p2-pawn"></div>';
-                    if (validMoves.some(m => m.r === row && m.c === col)) el.classList.add('valid-move');
-                    if (document.getElementById('toggle-path').checked) {
-                        const dist = getShortestPath({r:row, c:col}, state.turn === 1 ? 0 : 8);
-                        el.innerHTML += `<span class="path-label">${dist === Infinity ? 'X' : dist}</span>`;
-                    }
-                    el.onclick = () => movePawn(row, col);
-                } else {
-                    el.className = isH ? 'h-wall' : (isV ? 'v-wall' : 'joint');
-                    const id = `${r}-${c}`;
-                    if (state.walls.includes(id)) el.classList.add('wall-placed');
-                    if (r % 2 !== 1 || c % 2 !== 1) {
-                        el.onmouseenter = () => hoverWall(r, c, isH ? 'h' : 'v');
-                        el.onmouseleave = () => clearWallPreview();
-                        el.onclick = () => handleWallClick(r, c, isH ? 'h' : 'v');
-                    }
-                }
-                boardEl.appendChild(el);
+                applyColors(sCol, wCol);
+                render();
             }
-        }
-        updateUI();
-    }
 
-    function movePawn(r, c) {
-        const p = state.turn === 1 ? state.p1 : state.p2;
-        const opp = state.turn === 1 ? state.p2 : state.p1;
-        if (!getValidMoves(p, opp).some(m => m.r === r && m.c === c)) return;
-        state.lastState = JSON.parse(JSON.stringify(state));
-        state.history.push(`P${state.turn}: ${String.fromCharCode(97+c)}${9-r}`);
-        if (state.turn === 1) { state.p1.r = r; state.p1.c = c; } else { state.p2.r = r; state.p2.c = c; }
-        checkWin() || endTurn();
-    }
+            function updateColors() {
+                const sCol = document.getElementById("square-picker").value;
+                const wCol = document.getElementById("wall-picker").value;
+                localStorage.setItem("q-square-col", sCol);
+                localStorage.setItem("q-wall-col", wCol);
+                applyColors(sCol, wCol);
+            }
 
-    function handleWallClick(r, c, type) {
-        if (!document.getElementById('toggle-preview').checked) { placeWall(r, c, type); return; }
-        if (previewWall && previewWall.r === r && previewWall.c === c) { placeWall(r, c, type); previewWall = null; }
-        else { previewWall = {r, c, type}; render(); const ids = getWallTriple(r, c, type); ids?.forEach(id => getEl(id)?.classList.add('wall-preview')); }
-    }
+            function applyColors(s, w) {
+                document.documentElement.style.setProperty("--square-color", s);
+                document.documentElement.style.setProperty("--wall-slot-color", w);
+            }
 
-    function placeWall(r, c, type) {
-        const ids = getWallTriple(r, c, type);
-        const p = state.turn === 1 ? state.p1 : state.p2;
-        if (!ids || p.walls <= 0 || ids.some(id => state.walls.includes(id))) return;
-        state.lastState = JSON.parse(JSON.stringify(state));
-        ids.forEach(id => state.walls.push(id));
-        if (getShortestPath(state.p1, 0) === Infinity || getShortestPath(state.p2, 8) === Infinity) { ids.forEach(id => state.walls.pop()); alert("Blocked!"); return; }
-        p.walls--;
-        state.history.push(`P${state.turn}: ${String.fromCharCode(97+(type==='h'?c/2:(c-1)/2))}${9-(type==='h'?(r-1)/2:r/2)}${type}`);
-        endTurn();
-    }
+            function resetCustomColors() {
+                localStorage.removeItem("q-square-col");
+                localStorage.removeItem("q-wall-col");
+                const defSquare = "#3a4145";
+                const defWall = "#1c1c1c";
+                document.getElementById("square-picker").value = defSquare;
+                document.getElementById("wall-picker").value = defWall;
+                applyColors(defSquare, defWall);
+            }
 
-    function getValidMoves(p, opp) {
-        const moves = [];
-        [[0,1],[0,-1],[1,0],[-1,0]].forEach(([dr, dc]) => {
-            const nr = p.r + dr, nc = p.c + dc;
-            if (nr>=0 && nr<SIZE && nc>=0 && nc<SIZE && !isBlocked(p.r, p.c, nr, nc)) {
-                if (nr === opp.r && nc === opp.c) {
-                    const jr = nr+dr, jc = nc+dc;
-                    if (jr>=0 && jr<SIZE && jc>=0 && jc<SIZE && !isBlocked(nr, nc, jr, jc)) moves.push({r:jr, c:jc});
-                    else {
-                        [[1,0],[-1,0],[0,1],[0,-1]].forEach(([ddr, ddc]) => {
-                            if ((dr === 0 && ddc === 0) || (dc === 0 && ddr === 0)) {
-                                const drr = nr+ddr, dcc = nc+ddc;
-                                if (drr>=0 && drr<SIZE && dcc>=0 && dcc<SIZE && !isBlocked(nr, nc, drr, dcc)) moves.push({r:drr, c:dcc});
+            function render() {
+                boardEl.innerHTML = "";
+                const cols = [];
+                for (let i = 0; i < SIZE; i++) {
+                    cols.push("45px");
+                    if (i < SIZE - 1) cols.push("10px");
+                }
+                boardEl.style.gridTemplateColumns = cols.join(" ");
+
+                const validMoves = document.getElementById("toggle-moves").checked ? getValidMoves(state.turn === 1 ? state.p1 : state.p2, state.turn === 1 ? state.p2 : state.p1) : [];
+
+                for (let r = 0; r < SIZE * 2 - 1; r++) {
+                    for (let c = 0; c < SIZE * 2 - 1; c++) {
+                        const el = document.createElement("div");
+                        const isSquare = r % 2 === 0 && c % 2 === 0;
+                        const isH = r % 2 === 1 && c % 2 === 0;
+                        const isV = r % 2 === 0 && c % 2 === 1;
+
+                        if (isSquare) {
+                            el.className = "square";
+                            const row = r / 2,
+                                col = c / 2;
+                            if (row === state.p1.r && col === state.p1.c) el.innerHTML = '<div class="pawn p1-pawn"></div>';
+                            else if (row === state.p2.r && col === state.p2.c) el.innerHTML = '<div class="pawn p2-pawn"></div>';
+                            if (validMoves.some((m) => m.r === row && m.c === col)) el.classList.add("valid-move");
+                            if (document.getElementById("toggle-path").checked) {
+                                const dist = getShortestPath({r: row, c: col}, state.turn === 1 ? 0 : 8);
+                                el.innerHTML += `<span class="path-label">${dist === Infinity ? "X" : dist}</span>`;
                             }
-                        });
+                            el.onclick = () => movePawn(row, col);
+                        } else {
+                            el.className = isH ? "h-wall" : isV ? "v-wall" : "joint";
+                            const id = `${r}-${c}`;
+                            if (state.walls.includes(id)) el.classList.add("wall-placed");
+                            if (r % 2 !== 1 || c % 2 !== 1) {
+                                el.onmouseenter = () => hoverWall(r, c, isH ? "h" : "v");
+                                el.onmouseleave = () => clearWallPreview();
+                                el.onclick = () => handleWallClick(r, c, isH ? "h" : "v");
+                            }
+                        }
+                        boardEl.appendChild(el);
                     }
-                } else moves.push({r:nr, c:nc});
-            }
-        });
-        return moves;
-    }
-
-    function getShortestPath(start, targetRow) {
-        const q = [[start.r, start.c, 0]], visited = new Set([`${start.r},${start.c}`]);
-        while(q.length) {
-            const [r, c, d] = q.shift();
-            if (r === targetRow) return d;
-            [[0,1],[0,-1],[1,0],[-1,0]].forEach(([dr, dc]) => {
-                const nr = r+dr, nc = c+dc;
-                if (nr>=0 && nr<SIZE && nc>=0 && nc<SIZE && !visited.has(`${nr},${nc}`) && !isBlocked(r, c, nr, nc)) {
-                    visited.add(`${nr},${nc}`); q.push([nr, nc, d+1]);
                 }
-            });
-        }
-        return Infinity;
-    }
+                updateUI();
+            }
 
-    function isBlocked(r1, c1, r2, c2) {
-        const id = (r1 === r2) ? `${r1*2}-${Math.min(c1, c2)*2 + 1}` : `${Math.min(r1, r2)*2 + 1}-${c1*2}`;
-        return state.walls.includes(id);
-    }
+            function movePawn(r, c) {
+                const p = state.turn === 1 ? state.p1 : state.p2;
+                const opp = state.turn === 1 ? state.p2 : state.p1;
+                if (!getValidMoves(p, opp).some((m) => m.r === r && m.c === c)) return;
+                state.lastState = JSON.parse(JSON.stringify(state));
+                state.history.push(`P${state.turn}: ${String.fromCharCode(97 + c)}${9 - r}`);
+                if (state.turn === 1) {
+                    state.p1.r = r;
+                    state.p1.c = c;
+                } else {
+                    state.p2.r = r;
+                    state.p2.c = c;
+                }
+                checkWin() || endTurn();
+            }
 
-    function getWallTriple(r, c, type) {
-        if (type === 'h') { if (c > (SIZE-2)*2) return null; return [`${r}-${c}`, `${r}-${c+1}`, `${r}-${c+2}`]; }
-        else { if (r > (SIZE-2)*2) return null; return [`${r}-${c}`, `${r+1}-${c}`, `${r+2}-${c}`]; }
-    }
+            function handleWallClick(r, c, type) {
+                if (!document.getElementById("toggle-preview").checked) {
+                    placeWall(r, c, type);
+                    return;
+                }
+                if (previewWall && previewWall.r === r && previewWall.c === c) {
+                    placeWall(r, c, type);
+                    previewWall = null;
+                } else {
+                    previewWall = {r, c, type};
+                    render();
+                    const ids = getWallTriple(r, c, type);
+                    ids?.forEach((id) => getEl(id)?.classList.add("wall-preview"));
+                }
+            }
 
-    function getEl(id) { const [r, c] = id.split('-').map(Number); return boardEl.children[r * (SIZE * 2 - 1) + c]; }
-    function hoverWall(r, c, type) { if (previewWall) return; const ids = getWallTriple(r, c, type); if (!ids || (state.turn === 1 ? state.p1.walls : state.p2.walls) <= 0) return; ids.forEach(id => { const el = getEl(id); if (el && !state.walls.includes(id)) el.classList.add('wall-preview'); }); }
-    function clearWallPreview() { if (previewWall) return; document.querySelectorAll('.wall-preview').forEach(e => e.classList.remove('wall-preview')); }
-    function updateUI() {
-        document.getElementById('p1-w').innerText = state.p1.walls; document.getElementById('p2-w').innerText = state.p2.walls;
-        document.getElementById('p1-box').className = 'player-box' + (state.turn === 1 ? ' p1-active' : '');
-        document.getElementById('p2-box').className = 'player-box' + (state.turn === 2 ? ' p2-active' : '');
-        const list = document.getElementById('history-list');
-        list.innerHTML = state.history.map((m, i) => `<div style="padding:4px 0; border-bottom:1px solid #222;">${i+1}. ${m}</div>`).join('');
-        list.scrollTop = list.scrollHeight;
-    }
-    function toggleDrawer() { const dr = document.getElementById('history-drawer'); dr.classList.toggle('open'); document.getElementById('drawer-handle').innerText = dr.classList.contains('open') ? '❮' : '❯'; }
-    function endTurn() { state.turn = state.turn === 1 ? 2 : 1; localStorage.setItem('quoridorState', JSON.stringify(state)); render(); }
-    function undo() { if (state.lastState) { state = state.lastState; render(); } }
-    function confirmNewGame() { if (confirm("Start fresh?")) { state = { turn: 1, p1: {r: 8, c: 4, walls: 10}, p2: {r: 0, c: 4, walls: 10}, walls: [], history: [], lastState: null }; localStorage.setItem('quoridorState', JSON.stringify(state)); render(); } }
-    function checkWin() { if (state.p1.r === 0) { alert("P1 Wins!"); confirmNewGame(); return true; } if (state.p2.r === 8) { alert("P2 Wins!"); confirmNewGame(); return true; } return false; }
+            function placeWall(r, c, type) {
+                const ids = getWallTriple(r, c, type);
+                const p = state.turn === 1 ? state.p1 : state.p2;
+                if (!ids || p.walls <= 0 || ids.some((id) => state.walls.includes(id))) return;
+                state.lastState = JSON.parse(JSON.stringify(state));
+                ids.forEach((id) => state.walls.push(id));
+                if (getShortestPath(state.p1, 0) === Infinity || getShortestPath(state.p2, 8) === Infinity) {
+                    ids.forEach((id) => state.walls.pop());
+                    alert("Blocked!");
+                    return;
+                }
+                p.walls--;
+                state.history.push(`P${state.turn}: ${String.fromCharCode(97 + (type === "h" ? c / 2 : (c - 1) / 2))}${9 - (type === "h" ? (r - 1) / 2 : r / 2)}${type}`);
+                endTurn();
+            }
 
-    init();
-</script>
-</body>
+            function getValidMoves(p, opp) {
+                const moves = [];
+                [
+                    [0, 1],
+                    [0, -1],
+                    [1, 0],
+                    [-1, 0],
+                ].forEach(([dr, dc]) => {
+                    const nr = p.r + dr,
+                        nc = p.c + dc;
+                    if (nr >= 0 && nr < SIZE && nc >= 0 && nc < SIZE && !isBlocked(p.r, p.c, nr, nc)) {
+                        if (nr === opp.r && nc === opp.c) {
+                            const jr = nr + dr,
+                                jc = nc + dc;
+                            if (jr >= 0 && jr < SIZE && jc >= 0 && jc < SIZE && !isBlocked(nr, nc, jr, jc)) moves.push({r: jr, c: jc});
+                            else {
+                                [
+                                    [1, 0],
+                                    [-1, 0],
+                                    [0, 1],
+                                    [0, -1],
+                                ].forEach(([ddr, ddc]) => {
+                                    if ((dr === 0 && ddc === 0) || (dc === 0 && ddr === 0)) {
+                                        const drr = nr + ddr,
+                                            dcc = nc + ddc;
+                                        if (drr >= 0 && drr < SIZE && dcc >= 0 && dcc < SIZE && !isBlocked(nr, nc, drr, dcc)) moves.push({r: drr, c: dcc});
+                                    }
+                                });
+                            }
+                        } else moves.push({r: nr, c: nc});
+                    }
+                });
+                return moves;
+            }
+
+            function getShortestPath(start, targetRow) {
+                const q = [[start.r, start.c, 0]],
+                    visited = new Set([`${start.r},${start.c}`]);
+                while (q.length) {
+                    const [r, c, d] = q.shift();
+                    if (r === targetRow) return d;
+                    [
+                        [0, 1],
+                        [0, -1],
+                        [1, 0],
+                        [-1, 0],
+                    ].forEach(([dr, dc]) => {
+                        const nr = r + dr,
+                            nc = c + dc;
+                        if (nr >= 0 && nr < SIZE && nc >= 0 && nc < SIZE && !visited.has(`${nr},${nc}`) && !isBlocked(r, c, nr, nc)) {
+                            visited.add(`${nr},${nc}`);
+                            q.push([nr, nc, d + 1]);
+                        }
+                    });
+                }
+                return Infinity;
+            }
+
+            function isBlocked(r1, c1, r2, c2) {
+                const id = r1 === r2 ? `${r1 * 2}-${Math.min(c1, c2) * 2 + 1}` : `${Math.min(r1, r2) * 2 + 1}-${c1 * 2}`;
+                return state.walls.includes(id);
+            }
+
+            function getWallTriple(r, c, type) {
+                if (type === "h") {
+                    if (c > (SIZE - 2) * 2) return null;
+                    return [`${r}-${c}`, `${r}-${c + 1}`, `${r}-${c + 2}`];
+                } else {
+                    if (r > (SIZE - 2) * 2) return null;
+                    return [`${r}-${c}`, `${r + 1}-${c}`, `${r + 2}-${c}`];
+                }
+            }
+
+            function getEl(id) {
+                const [r, c] = id.split("-").map(Number);
+                return boardEl.children[r * (SIZE * 2 - 1) + c];
+            }
+            function hoverWall(r, c, type) {
+                if (previewWall) return;
+                const ids = getWallTriple(r, c, type);
+                if (!ids || (state.turn === 1 ? state.p1.walls : state.p2.walls) <= 0) return;
+                ids.forEach((id) => {
+                    const el = getEl(id);
+                    if (el && !state.walls.includes(id)) el.classList.add("wall-preview");
+                });
+            }
+            function clearWallPreview() {
+                if (previewWall) return;
+                document.querySelectorAll(".wall-preview").forEach((e) => e.classList.remove("wall-preview"));
+            }
+            function updateUI() {
+                document.getElementById("p1-w").innerText = state.p1.walls;
+                document.getElementById("p2-w").innerText = state.p2.walls;
+                document.getElementById("p1-box").className = "player-box" + (state.turn === 1 ? " p1-active" : "");
+                document.getElementById("p2-box").className = "player-box" + (state.turn === 2 ? " p2-active" : "");
+                const list = document.getElementById("history-list");
+                list.innerHTML = state.history.map((m, i) => `<div style="padding:4px 0; border-bottom:1px solid #222;">${i + 1}. ${m}</div>`).join("");
+                list.scrollTop = list.scrollHeight;
+            }
+            function toggleDrawer() {
+                const dr = document.getElementById("history-drawer");
+                dr.classList.toggle("open");
+                document.getElementById("drawer-handle").innerText = dr.classList.contains("open") ? "❮" : "❯";
+            }
+            function endTurn() {
+                state.turn = state.turn === 1 ? 2 : 1;
+                localStorage.setItem("quoridorState", JSON.stringify(state));
+                render();
+            }
+            function undo() {
+                if (state.lastState) {
+                    state = state.lastState;
+                    render();
+                }
+            }
+            function confirmNewGame() {
+                if (confirm("Start fresh?")) {
+                    state = {turn: 1, p1: {r: 8, c: 4, walls: 10}, p2: {r: 0, c: 4, walls: 10}, walls: [], history: [], lastState: null};
+                    localStorage.setItem("quoridorState", JSON.stringify(state));
+                    render();
+                }
+            }
+            function checkWin() {
+                if (state.p1.r === 0) {
+                    alert("P1 Wins!");
+                    confirmNewGame();
+                    return true;
+                }
+                if (state.p2.r === 8) {
+                    alert("P2 Wins!");
+                    confirmNewGame();
+                    return true;
+                }
+                return false;
+            }
+
+            init();
+        </script>
+    </body>
 </html>
