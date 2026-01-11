@@ -15,6 +15,8 @@
                 --square-color: #3a4145;
                 --wall-slot-color: #1c1c1c;
                 --drawer-width: 280px;
+                --square-size: 35px;
+                --gap-size: 10px;
             }
 
             body {
@@ -24,7 +26,7 @@
                 margin: 0;
                 display: flex;
                 height: 100vh;
-                overflow: hidden;
+                /* overflow: hidden; */
             }
 
             /* Side Drawer */
@@ -74,7 +76,7 @@
                 justify-content: center;
                 align-items: center;
                 border-right: 1px solid #333;
-                gap: 10px;
+                gap: var(--gap-size);
             }
             #settings-panel {
                 flex: 1;
@@ -116,8 +118,8 @@
                 user-select: none;
             }
             .square {
-                width: 45px;
-                height: 45px;
+                width: var(--square-size);
+                height: var(--square-size);
                 background: var(--square-color);
                 cursor: pointer;
                 display: flex;
@@ -126,20 +128,20 @@
                 position: relative;
             }
             .v-wall {
-                width: 10px;
-                height: 45px;
+                width: var(--gap-size);
+                height: var(--square-size);
                 background: var(--wall-slot-color);
                 cursor: pointer;
             }
             .h-wall {
-                width: 45px;
-                height: 10px;
+                width: var(--square-size);
+                height: var(--gap-size);
                 background: var(--wall-slot-color);
                 cursor: pointer;
             }
             .joint {
-                width: 10px;
-                height: 10px;
+                width: var(--gap-size);
+                height: var(--gap-size);
                 background: var(--wall-slot-color);
             }
 
@@ -148,8 +150,8 @@
             }
             .valid-move::after {
                 content: "";
-                width: 10px;
-                height: 10px;
+                width: var(--gap-size);
+                height: var(--gap-size);
                 background: var(--p1-color);
                 border-radius: 50%;
                 opacity: 0.5;
@@ -170,11 +172,11 @@
             }
             .p1-pawn {
                 background: var(--p1-color);
-                box-shadow: 0 0 10px var(--p1-color);
+                box-shadow: 0 0 var(--gap-size) var(--p1-color);
             }
             .p2-pawn {
                 background: var(--p2-color);
-                box-shadow: 0 0 10px var(--p2-color);
+                box-shadow: 0 0 var(--gap-size) var(--p2-color);
             }
 
             /* UI */
@@ -244,7 +246,6 @@
             }
             @media (orientation: portrait),(max-width: 768px) {
                 body {
-                    align-content: center;
                     align-items: center;
                     flex-wrap: wrap;
                     justify-content: center;
@@ -356,13 +357,14 @@
                 document.getElementById("wall-picker").value = defWall;
                 applyColors(defSquare, defWall);
             }
-
+            let squareSize = `35px`;
+            let gapSize = `10px`;
             function render() {
                 boardEl.innerHTML = "";
                 const cols = [];
                 for (let i = 0; i < SIZE; i++) {
-                    cols.push("45px");
-                    if (i < SIZE - 1) cols.push("10px");
+                    cols.push(squareSize);
+                    if (i < SIZE - 1) cols.push(gapSize);
                 }
                 boardEl.style.gridTemplateColumns = cols.join(" ");
 
